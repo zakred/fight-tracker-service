@@ -4,7 +4,7 @@
 
 | ENV          | Description                      | Default |
 | ------------ | -------------------------------- | ------- |
-| SERVER_PORT  | Port of the login server         | 3000    |
+| SERVER_PORT  | Port of the login server         | 3005    |
 | CONTEXT_PATH | Context path of the login server | /       |
 | DB_FILENAME  | Path of DB filename              | db.json |
 
