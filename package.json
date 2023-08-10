@@ -1,0 +1,28 @@
+{
+    "name": "fight-tracker-service",
+    "version": "1.0.0",
+    "license": "MIT",
+    "author": {
+        "name": "Eduardo D"
+    },
+    "main": "src/main.js",
+    "scripts": {
+        "start": "node src/main.js",
+        "dev": "nodemon src/main.js",
+        "doc": "jsdoc src",
+        "format": "prettier . --write",
+        "format-check": "prettier . --check"
+    },
+    "dependencies": {
+        "axios": "^1.4.0",
+        "cors": "^2.8.5",
+        "express": "^4.18.2",
+        "morgan": "^1.10.0",
+        "uuid": "^9.0.0"
+    },
+    "devDependencies": {
+        "jsdoc": "^4.0.2",
+        "nodemon": "^3.0.1",
+        "prettier": "^3.0.1"
+    }
+}
