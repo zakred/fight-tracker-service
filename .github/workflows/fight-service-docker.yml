@@ -1,4 +1,4 @@
-name: WSO2 Docker Image
+name: Docker Image
 
 on:
     push:
