@@ -10,5 +10,5 @@ jobs:
         secrets:
             DOCKER_REGISTRY_SECRET: ${{ secrets.DOCKER_REGISTRY_SECRET }}
             DOCKER_REGISTRY_USER: zakred
-            DOCKER_IMAGE_NAME: zakred/fight-service:latest
+            DOCKER_IMAGE_NAME: zakred/fight-tracker-service:latest
             DOCKER_CONTEXT_PATH: .
