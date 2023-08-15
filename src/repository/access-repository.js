@@ -5,8 +5,8 @@ const global = require("../global");
 class AccessRepository {
     db = {access: []};
 
-    constructor() {
-        this.DB_FILENAME = process.env.ACCESS_DB_FILENAME || "access-db.json";
+    constructor(dbFilename) {
+        this.DB_FILENAME = dbFilename;
         this.#loadDB(this.DB_FILENAME);
     }
 
@@ -31,7 +31,8 @@ class AccessRepository {
 
     findAllForFight(fightId) {
         return this.db.access.find(
-            (x) => x.type === "FIGHT" && x.resourceId === fightId,
+            (x) =>
+                x.type === global.ACCESS_TYPE.FIGHT && x.resourceId === fightId,
         );
     }
 

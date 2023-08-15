@@ -2,32 +2,27 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const {auth, requiredScopes} = require("express-oauth2-jwt-bearer");
+const envConfig = require("./envConfig");
 const AccessRepository = require("./repository/access-repository");
 const accessService = new (require("./service/domain/access-service"))(
-    new AccessRepository(),
+    new AccessRepository(envConfig.ACCESS_DB_FILENAME),
 );
 const FightRepository = require("./repository/fight-repository");
 const FightService = require("./service/domain/fight-service");
-const fightService = new FightService(new FightRepository(), accessService);
+const fightService = new FightService(
+    new FightRepository(envConfig.DB_FILENAME),
+    accessService,
+);
 const validatorSchema =
     new (require("./service/domain/schema-validator-service"))();
-const emailFrom = process.env.EMAIL_FROM;
 const emailService = new (require("./service/infrastructure/email-service"))(
-    emailFrom,
+    envConfig.AWS_REGION,
+    envConfig.email,
 );
 
-const SERVER_PORT = process.env.SERVER_PORT || 3005;
-const CONTEXT_PATH = process.env.CONTEXT_PATH || "/";
-
-const AUTH_AUD =
-    process.env.AUTH_AUD ||
-    "https://api.fight-tracker.com,https://fight-tracker.us.auth0.com/userinfo";
-const AUTH_ISSUER =
-    process.env.AUTH_ISSUER || "https://fight-tracker.us.auth0.com/";
-
 const checkJwt = auth({
-    audience: AUTH_AUD.split(","),
-    issuerBaseURL: AUTH_ISSUER,
+    audience: envConfig.AUTH_AUD.split(","),
+    issuerBaseURL: envConfig.AUTH_ISSUER,
 });
 
 const getAuthUser = (auth) => {
@@ -47,7 +42,7 @@ const router = express.Router();
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
-app.use(CONTEXT_PATH, router);
+app.use(envConfig.CONTEXT_PATH, router);
 
 router.get(
     "/fight/retrieve",
@@ -155,6 +150,6 @@ router.put(
     }),
 );
 
-app.listen(SERVER_PORT, () => {
-    console.log(`Server listening on port ${SERVER_PORT}`);
+app.listen(envConfig.SERVER_PORT, () => {
+    console.log(`Server listening on port ${envConfig.SERVER_PORT}`);
 });

@@ -5,8 +5,8 @@ const errorUtil = require("../util/errorUtil");
 class FightRepository {
     db = {fights: []};
 
-    constructor() {
-        this.DB_FILENAME = process.env.DB_FILENAME || "db.json";
+    constructor(dbFilename) {
+        this.DB_FILENAME = dbFilename;
         this.#loadDB(this.DB_FILENAME);
     }
 

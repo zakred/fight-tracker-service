@@ -4,8 +4,8 @@ const uuid = require("uuid");
 class AccessRepository {
     db = {lists: []};
 
-    constructor() {
-        this.DB_FILENAME = process.env.LIST_DB_FILENAME || "lists-db.json";
+    constructor(dbFilename) {
+        this.DB_FILENAME = dbFilename;
         this.#loadDB(this.DB_FILENAME);
     }
 
