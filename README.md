@@ -25,3 +25,7 @@ yarn install
 ```shell
 yarn start
 ```
+
+# Roadmap
+
+-   consider swagger-to-joi

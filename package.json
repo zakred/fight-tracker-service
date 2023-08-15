@@ -14,9 +14,12 @@
         "format-check": "prettier . --check"
     },
     "dependencies": {
+        "aws-sdk": "^2.1436.0",
         "axios": "^1.4.0",
         "cors": "^2.8.5",
         "express": "^4.18.2",
+        "express-oauth2-jwt-bearer": "^1.5.0",
+        "joi": "^17.9.2",
         "morgan": "^1.10.0",
         "uuid": "^9.0.0"
     },
