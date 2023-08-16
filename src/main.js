@@ -134,6 +134,18 @@ router.post(
     }),
 );
 
+router.post(
+    "/share/delete",
+    checkJwt,
+    requiredScopes("fight-tracker-service.share"),
+    validatorSchema.mwDeleteShareRequest,
+    asyncHandler(async (req, res) => {
+        const authUser = getAuthUser(req.auth);
+        const result = await shareService.delete(authUser, req.validatedBody);
+        res.status(201).json(result ?? {message: "success"});
+    }),
+);
+
 app.listen(envConfig.SERVER_PORT, () => {
     console.log(`Server listening on port ${envConfig.SERVER_PORT}`);
 });

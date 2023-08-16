@@ -73,10 +73,23 @@ class AccessService {
         if (!access) {
             errorUtil.throwNotFound(req.resourceId);
         }
+        if (authUser.email !== access.email) {
+            errorUtil.throwForbiddenEntity(req.resourceId);
+        }
         access.status = global.ACCESS_STATUS.ACCEPTED;
         await this.repo.save(authUser, access);
         return 0;
     }
+
+    deleteAccess = async (req) => {
+        for (const person of req.persons) {
+            await this.repo.deleteByResourceIdAndEmail(
+                req.resourceId,
+                person.email,
+            );
+        }
+        return req.persons.length;
+    };
 
     deleteAllFor = async (resourceId) => {
         return this.repo.deleteAllFor(resourceId);

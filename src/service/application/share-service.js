@@ -18,12 +18,12 @@ class ShareService {
                     errorUtil.throwNotFound(req.resourceId);
                 }
                 if (fight.owner.id !== authUser.id) {
-                    if (
-                        !(await this.accessService.isResourceAuthorizedToShare(
+                    const isAuthorizedToShare =
+                        await this.accessService.isResourceAuthorizedToShare(
                             authUser,
                             req.resourceId,
-                        ))
-                    ) {
+                        );
+                    if (!isAuthorizedToShare) {
                         errorUtil.throwForbiddenEntity(req.resourceId);
                     }
                 }
@@ -34,6 +34,41 @@ class ShareService {
                     emailsToNotify,
                     authUser.name,
                 );
+                break;
+            case global.ACCESS_TYPE.LIST:
+                break;
+            default:
+                errorUtil.throwTypeNotSupported(req.type);
+        }
+    };
+
+    delete = async (authUser, req) => {
+        switch (req.type) {
+            case global.ACCESS_TYPE.FIGHT:
+                const fight = await this.fightService.getFightById(
+                    req.resourceId,
+                );
+                if (!fight) {
+                    errorUtil.throwNotFound(req.resourceId);
+                }
+                if (fight.owner.id !== authUser.id) {
+                    const isAuthorizedToShare =
+                        await this.accessService.isResourceAuthorizedToShare(
+                            authUser,
+                            req.resourceId,
+                        );
+                    if (!isAuthorizedToShare) {
+                        errorUtil.throwForbiddenEntity(req.resourceId);
+                    }
+                }
+
+                await this.accessService.deleteAccess(req);
+                const emailsToNotify = req.persons.map((x) => x.email);
+                //TODO template for deletion
+                // this.emailService.sendShareInvitationEmailBulk(
+                //     emailsToNotify,
+                //     authUser.name,
+                // );
                 break;
             case global.ACCESS_TYPE.LIST:
                 break;

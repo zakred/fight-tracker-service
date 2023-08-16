@@ -2,6 +2,7 @@ const createShareRequestSchema = require("../../schemas/create-share-request-sch
 const createFightRequestSchema = require("../../schemas/create-fight-request-schema");
 const updateFightRequestSchema = require("../../schemas/update-fight-request-schema");
 const acceptShareRequestSchema = require("../../schemas/accept-share-request-schema");
+const deleteShareRequestSchema = require("../../schemas/delete-share-request-schema");
 
 class SchemaValidatorService {
     constructor() {}
@@ -16,6 +17,15 @@ class SchemaValidatorService {
         );
     };
 
+    mwDeleteShareRequest = (req, res, next) => {
+        return this.#createSchemaValidator(
+            deleteShareRequestSchema.schema,
+            req.body,
+            req,
+            res,
+            next,
+        );
+    };
     mwCreateShareRequest = (req, res, next) => {
         return this.#createSchemaValidator(
             createShareRequestSchema.schema,

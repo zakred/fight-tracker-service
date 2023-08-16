@@ -90,6 +90,27 @@ class AccessRepository {
         return 1;
     };
 
+    async deleteById(accessId) {
+        const access = await this.db.access.find(accessId);
+        if (!access) {
+            errorUtil.throwNotFound(accessId);
+        }
+        this.db.fights = this.db.fights.filter((x) => x.accessId !== accessId);
+        this.#persistDB(this.db);
+        return 1;
+    }
+
+    async deleteByResourceIdAndEmail(resourceId, email) {
+        const entity = await this.findByResourceIdAndEmail(resourceId, email);
+        if (!entity) {
+            errorUtil.throwNotFound(resourceId);
+        }
+        this.db.access = this.db.access.filter(
+            (x) => x.accessId !== entity.accessId,
+        );
+        this.#persistDB(this.db);
+        return 1;
+    }
     deleteAllFor = async (resourceId) => {
         const access = this.db.access.filter(
             (x) => x.resourceId === resourceId,
