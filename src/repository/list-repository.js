@@ -1,7 +1,7 @@
 const fs = require("fs");
 const uuid = require("uuid");
 
-class AccessRepository {
+class ListRepository {
     db = {lists: []};
 
     constructor(dbFilename) {
@@ -59,4 +59,4 @@ class AccessRepository {
     };
 }
 
-module.exports = AccessRepository;
+module.exports = ListRepository;

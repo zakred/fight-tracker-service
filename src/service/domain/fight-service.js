@@ -1,5 +1,3 @@
-const uuid = require("uuid");
-
 class FightService {
     constructor(fightRepository, accessService) {
         this.repo = fightRepository;

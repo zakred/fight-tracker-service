@@ -1,100 +1,218 @@
 {
-    "info": {
-        "_postman_id": "8e7c2b4a-e142-49ab-8c70-86699cc2deb7",
-        "name": "fight-tracker-service",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-        "_exporter_id": "3186761"
-    },
-    "item": [
-        {
-            "name": "Retrieve",
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{WEB_FQDN}}/fight/retrieve",
-                    "host": ["{{WEB_FQDN}}"],
-                    "path": ["fight", "retrieve"]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Create",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            "pm.environment.set('FIGHT_ID', pm.response.json().fightId);"
-                        ],
-                        "type": "text/javascript"
-                    }
-                }
-            ],
-            "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\r\n    \"fightName\": \"string\",\r\n    \"description\": \"string\",\r\n    \"initiatorName\": \"string\",\r\n    \"personsInvolved\": [\r\n        {\r\n            \"name\": \"string\"\r\n        }\r\n    ],\r\n    \"severity\": \"HIGH\",\r\n    \"status\": \"NOT_STARTED\",\r\n    \"startDate\": \"2023-08-10\",\r\n    \"endDate\": \"2023-08-10\",\r\n    \"expectedEndDate\": \"2023-08-10\",\r\n    \"possibleResolution\": \"string\",\r\n    \"isRemediable\": true\r\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{WEB_FQDN}}/fight/create",
-                    "host": ["{{WEB_FQDN}}"],
-                    "path": ["fight", "create"]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Update",
-            "request": {
-                "method": "PUT",
-                "header": [],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\r\n    \"fightId\": \"{{FIGHT_ID}}\",\r\n    \"fightName\": \"updated\",\r\n    \"description\": \"updated\",\r\n    \"initiatorName\": \"string\",\r\n    \"personsInvolved\": [\r\n        {\r\n            \"name\": \"string\"\r\n        }\r\n    ],\r\n    \"severity\": \"HIGH\",\r\n    \"status\": \"NOT_STARTED\",\r\n    \"startDate\": \"2023-08-10\",\r\n    \"endDate\": \"2023-08-10\",\r\n    \"expectedEndDate\": \"2023-08-10\",\r\n    \"possibleResolution\": \"string\",\r\n    \"isRemediable\": true\r\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{WEB_FQDN}}/fight/update",
-                    "host": ["{{WEB_FQDN}}"],
-                    "path": ["fight", "update"]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Delete",
-            "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\r\n    \"fightId\": \"{{FIGHT_ID}}\"\r\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{WEB_FQDN}}/fight/delete",
-                    "host": ["{{WEB_FQDN}}"],
-                    "path": ["fight", "delete"]
-                }
-            },
-            "response": []
-        }
-    ]
+	"info": {
+		"_postman_id": "8e7c2b4a-e142-49ab-8c70-86699cc2deb7",
+		"name": "fight-tracker-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3186761"
+	},
+	"item": [
+		{
+			"name": "fights",
+			"item": [
+				{
+					"name": "Retrieve",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{WEB_FQDN}}/fight/retrieve",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"fight",
+								"retrieve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set('FIGHT_ID', pm.response.json().fightId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fightName\": \"string\",\r\n    \"description\": \"string\",\r\n    \"fightImageUrl\": \"http://example.com\",\r\n    \"initiatorName\": \"string\",\r\n    \"severity\": \"HIGH\",\r\n    \"status\": \"NOT_STARTED\",\r\n    \"startDate\": \"2023-08-15\",\r\n    \"endDate\": \"2023-08-15\",\r\n    \"expectedEndDate\": \"2023-08-15\",\r\n    \"isRemediable\": true,\r\n    \"possibleResolutions\": [\r\n        \"string\"\r\n    ],\r\n    \"personsInvolved\": [\r\n        {\r\n            \"name\": \"string\",\r\n            \"avatarUrl\": \"http://example.com\",\r\n            \"label1\": \"string\",\r\n            \"label2\": \"string\"\r\n        }\r\n    ],\r\n    \"evidence\": [\r\n        {\r\n            \"name\": \"string\",\r\n            \"size\": \"string\",\r\n            \"url\": \"http://example.com\",\r\n            \"type\": \"IMAGE\"\r\n        }\r\n    ],\r\n    \"comments\": [\r\n        {\r\n            \"name\": \"string\",\r\n            \"avatarUrl\": \"http://example.com\",\r\n            \"message\": \"string\",\r\n            \"createdAt\": \"1691800215163\"\r\n        }\r\n    ],\r\n    \"listId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/fight/create",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"fight",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fightId\": \"{{FIGHT_ID}}\",\r\n    \"fightName\": \"updated\",\r\n    \"description\": \"updated\",\r\n    \"fightImageUrl\": \"http://updated.com\",\r\n    \"initiatorName\": \"updated\",\r\n    \"severity\": \"LOW\",\r\n    \"status\": \"IN_PROGRESS\",\r\n    \"startDate\": \"2023-08-14\",\r\n    \"endDate\": \"2023-08-14\",\r\n    \"expectedEndDate\": \"2023-08-14\",\r\n    \"isRemediable\": false,\r\n    \"possibleResolutions\": [\r\n        \"updated\"\r\n    ],\r\n    \"personsInvolved\": [\r\n        {\r\n            \"name\": \"updated\",\r\n            \"avatarUrl\": \"http://updated.com\",\r\n            \"label1\": \"updated\",\r\n            \"label2\": \"updated\"\r\n        }\r\n    ],\r\n    \"evidence\": [\r\n        {\r\n            \"name\": \"updated\",\r\n            \"size\": \"updated\",\r\n            \"url\": \"http://updated.com\",\r\n            \"type\": \"IMAGE\"\r\n        }\r\n    ],\r\n    \"comments\": [\r\n        {\r\n            \"name\": \"updated\",\r\n            \"avatarUrl\": \"http://updated.com\",\r\n            \"message\": \"updated\",\r\n            \"createdAt\": \"1691800215163\"\r\n        }\r\n    ],\r\n    \"listId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/fight/update",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"fight",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fightId\": \"{{FIGHT_ID}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/fight/delete",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"fight",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "lists",
+			"item": []
+		},
+		{
+			"name": "share",
+			"item": [
+				{
+					"name": "Create Share",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n        {\r\n            \"email\": \"test@email.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/share/create",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"share",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Share",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/share/accept",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"share",
+								"accept"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
 }

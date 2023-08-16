@@ -1,9 +1,20 @@
 const createShareRequestSchema = require("../../schemas/create-share-request-schema");
 const createFightRequestSchema = require("../../schemas/create-fight-request-schema");
 const updateFightRequestSchema = require("../../schemas/update-fight-request-schema");
+const acceptShareRequestSchema = require("../../schemas/accept-share-request-schema");
 
 class SchemaValidatorService {
     constructor() {}
+
+    mwAcceptShareRequest = (req, res, next) => {
+        return this.#createSchemaValidator(
+            acceptShareRequestSchema.schema,
+            req.body,
+            req,
+            res,
+            next,
+        );
+    };
 
     mwCreateShareRequest = (req, res, next) => {
         return this.#createSchemaValidator(
@@ -45,6 +56,7 @@ class SchemaValidatorService {
                     console.error(result.error.details.map((x) => x.message));
                     return;
                 }
+                req.validatedBody = result.value;
                 next();
             } catch (e) {
                 res.status(400).json(e);

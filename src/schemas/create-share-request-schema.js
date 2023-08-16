@@ -8,12 +8,14 @@ const schema = Joi.object({
         .required(),
     type: Joi.string().pattern(new RegExp("^FIGHT$|^LIST$")).required(),
 
-    persons: Joi.array().items({
-        email: Joi.string().email(),
-        role: Joi.string()
-            .pattern(new RegExp("^VIEW$|^EDIT$|^EDIT_INVITE$"))
-            .required(),
-    }),
+    persons: Joi.array()
+        .required()
+        .items({
+            email: Joi.string().email().lowercase().trim().required(),
+            role: Joi.string()
+                .pattern(new RegExp("^VIEW$|^EDIT$|^EDIT_INVITE$"))
+                .required(),
+        }),
 });
 
 module.exports = {

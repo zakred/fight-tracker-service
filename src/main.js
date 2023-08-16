@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const {auth, requiredScopes} = require("express-oauth2-jwt-bearer");
-const envConfig = require("./envConfig");
+const envConfig = require("./env-config");
 const AccessRepository = require("./repository/access-repository");
 const accessService = new (require("./service/domain/access-service"))(
     new AccessRepository(envConfig.ACCESS_DB_FILENAME),
@@ -126,7 +126,7 @@ router.post(
     }),
 );
 
-router.put(
+router.post(
     "/share/create",
     checkJwt,
     requiredScopes("fight-tracker-service.share"),
@@ -134,11 +134,36 @@ router.put(
     asyncHandler(async (req, res) => {
         try {
             const authUser = getAuthUser(req.auth);
-            const result = await accessService.createAccess(authUser, req.body);
+            const result = await accessService.createAccess(
+                authUser,
+                req.validatedBody,
+            );
             const emailsToNotify = req.body.persons.map((x) => x.email);
             emailService.sendShareInvitationEmailBulk(
                 emailsToNotify,
                 authUser.name,
+            );
+            res.status(201).json(result ?? {message: "success"});
+        } catch (e) {
+            res.status(500).json({
+                message: e.message ?? "Error",
+                data: e.data ?? "",
+            });
+        }
+    }),
+);
+
+router.post(
+    "/share/accept",
+    checkJwt,
+    requiredScopes("fight-tracker-service.share"),
+    validatorSchema.mwAcceptShareRequest,
+    asyncHandler(async (req, res) => {
+        try {
+            const authUser = getAuthUser(req.auth);
+            const result = await accessService.acceptSharedResource(
+                authUser,
+                req.body,
             );
             res.status(201).json(result ?? {message: "success"});
         } catch (e) {

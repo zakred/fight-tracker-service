@@ -1,6 +1,7 @@
 const fs = require("fs");
 const uuid = require("uuid");
-const errorUtil = require("../util/errorUtil");
+const errorUtil = require("../util/error-util");
+const entityUtil = require("../util/entity-util");
 
 class FightRepository {
     db = {fights: []};
@@ -21,10 +22,6 @@ class FightRepository {
         fs.writeFileSync(this.DB_FILENAME, JSON.stringify(obj, undefined, 2));
     }
 
-    findAll = async () => {
-        return this.db.fights;
-    };
-
     findAllOwnedAndInFightIdList = async (authUser, fightIdList) => {
         return this.db.fights.filter(
             (x) =>
@@ -38,15 +35,7 @@ class FightRepository {
 
     create = async (authUser, req) => {
         req.fightId = uuid.v4();
-        req.createdAt = new Date().toISOString();
-        req.createdBy = {
-            id: authUser.id,
-            email: authUser.email,
-        };
-        req.owner = {
-            id: authUser.id,
-            email: authUser.email,
-        };
+        entityUtil.addCreateAuditWithOwner(authUser, req);
         this.db.fights.push(req);
         this.#persistDB(this.db);
         return 1;
@@ -57,13 +46,7 @@ class FightRepository {
         if (!fight) {
             errorUtil.throwNotFound(req.fightId);
         }
-        req.updatedBy = {
-            id: authUser.id,
-            email: authUser.email,
-        };
-        req.updatedAt = new Date().toISOString();
-
-        this.#updateEntityAndAddExtraProperties(fight, req);
+        entityUtil.updateEntityAndAddExtraProperties(fight, req);
         this.db.fights = this.db.fights.filter(
             (x) => x.fightId !== req.fightId,
         );
@@ -71,12 +54,6 @@ class FightRepository {
         this.#persistDB(this.db);
         return 1;
     };
-
-    #updateEntityAndAddExtraProperties(existing, updatedAndExtraProperties) {
-        Object.keys(updatedAndExtraProperties).forEach(
-            (k) => (existing[k] = updatedAndExtraProperties[k]),
-        );
-    }
 
     delete = async (fightId) => {
         const fight = await this.find(fightId);
