@@ -3,7 +3,7 @@ const errorUtil = require("../util/error-util");
 const global = require("../global");
 const uuid = require("uuid");
 const entityUtil = require("../util/entity-util");
-const {auth} = require("express-oauth2-jwt-bearer");
+const {ACCESS_STATUS, ACCESS_TYPE} = require("../global");
 
 class AccessRepository {
     db = {access: []};
@@ -31,13 +31,19 @@ class AccessRepository {
     };
 
     findAllAuthenticatedUser(authUser) {
-        return this.db.access.find((x) => x.subjectId === authUser.id);
+        return this.db.access.filter((x) => x.subjectId === authUser.id);
     }
 
-    findAllForFight(fightId) {
-        return this.db.access.find(
+    findAllForResource = async (resourceId) => {
+        return this.db.access.filter((x) => x.resourceId === resourceId);
+    };
+
+    findAllAcceptedForFight(fightId) {
+        return this.db.access.filter(
             (x) =>
-                x.type === global.ACCESS_TYPE.FIGHT && x.resourceId === fightId,
+                x.type === ACCESS_TYPE.FIGHT &&
+                x.status === ACCESS_STATUS.ACCEPTED &&
+                x.resourceId === fightId,
         );
     }
 
@@ -73,6 +79,7 @@ class AccessRepository {
         if (!entity) {
             errorUtil.throwNotFound(req.accessId);
         }
+        entity.subjectId = authUser.id;
         entityUtil.addUpdateAudit(authUser, req);
         entityUtil.updateEntityAndAddExtraProperties(entity, req);
         this.db.access = this.db.access.filter(
@@ -83,12 +90,17 @@ class AccessRepository {
         return 1;
     };
 
-    delete = async (accessId) => {
-        const access = await this.db.access.find(accessId);
-        if (!access) {
-            errorUtil.throwNotFound(accessId);
+    deleteAllFor = async (resourceId) => {
+        const access = this.db.access.filter(
+            (x) => x.resourceId === resourceId,
+        );
+        if (!access || access.length === 0) {
+            return;
         }
-        this.db.access = this.db.access.filter((x) => x.accessId !== accessId);
+        const accessIds = access.map((x) => x.accessId);
+        this.db.access = this.db.access.filter(
+            (x) => !accessIds.includes(x.accessId),
+        );
         this.#persistDB(this.db);
         return 1;
     };

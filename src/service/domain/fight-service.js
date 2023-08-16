@@ -4,6 +4,10 @@ class FightService {
         this.accessService = accessService;
     }
 
+    getFightById = async (fightId) => {
+        return this.repo.find(fightId);
+    };
+
     getFights = async (authUser) => {
         const access = this.accessService.getAccessGranted(authUser);
         const fightIdsShared = this.accessService.getFightIdsShared(access);
@@ -26,7 +30,7 @@ class FightService {
 
     deleteFight = async (fightId) => {
         await this.repo.delete(fightId);
-
+        await this.accessService.deleteAllFor(fightId);
         return {message: "success"};
     };
 }

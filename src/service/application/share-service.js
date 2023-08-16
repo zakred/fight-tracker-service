@@ -1,0 +1,46 @@
+const global = require("../../global");
+const errorUtil = require("../../util/error-util");
+
+class ShareService {
+    constructor(fightService, accessService, emailService) {
+        this.fightService = fightService;
+        this.accessService = accessService;
+        this.emailService = emailService;
+    }
+
+    create = async (authUser, req) => {
+        switch (req.type) {
+            case global.ACCESS_TYPE.FIGHT:
+                const fight = await this.fightService.getFightById(
+                    req.resourceId,
+                );
+                if (!fight) {
+                    errorUtil.throwNotFound(req.resourceId);
+                }
+                if (fight.owner.id !== authUser.id) {
+                    if (
+                        !(await this.accessService.isResourceAuthorizedToShare(
+                            authUser,
+                            req.resourceId,
+                        ))
+                    ) {
+                        errorUtil.throwForbiddenEntity(req.resourceId);
+                    }
+                }
+
+                await this.accessService.createAccess(authUser, req);
+                const emailsToNotify = req.persons.map((x) => x.email);
+                this.emailService.sendShareInvitationEmailBulk(
+                    emailsToNotify,
+                    authUser.name,
+                );
+                break;
+            case global.ACCESS_TYPE.LIST:
+                break;
+            default:
+                errorUtil.throwTypeNotSupported(req.type);
+        }
+    };
+}
+
+module.exports = ShareService;

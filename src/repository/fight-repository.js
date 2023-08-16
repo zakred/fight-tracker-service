@@ -46,6 +46,7 @@ class FightRepository {
         if (!fight) {
             errorUtil.throwNotFound(req.fightId);
         }
+        entityUtil.addUpdateAudit(authUser, req);
         entityUtil.updateEntityAndAddExtraProperties(fight, req);
         this.db.fights = this.db.fights.filter(
             (x) => x.fightId !== req.fightId,

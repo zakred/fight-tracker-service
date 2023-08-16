@@ -34,4 +34,5 @@ module.exports = {
     updateEntityAndAddExtraProperties,
     addCreateAudit,
     addUpdateAudit,
+    addCreateAuditWithOwner,
 };
