@@ -11,6 +11,7 @@ const accessService = new (require("./service/domain/access-service"))(
 );
 const FightRepository = require("./repository/fight-repository");
 const FightService = require("./service/domain/fight-service");
+const {SCOPES} = require("./global");
 const fightService = new FightService(
     new FightRepository(envConfig.DB_FILENAME),
     accessService,
@@ -55,7 +56,7 @@ app.use(errorUtil.mwError);
 router.get(
     "/fight/retrieve",
     checkJwt,
-    requiredScopes("fight-tracker-service.read"),
+    requiredScopes(SCOPES.FIGHTS_READ),
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
         const result = await fightService.getFights(authUser);
@@ -66,7 +67,7 @@ router.get(
 router.post(
     "/fight/create",
     checkJwt,
-    requiredScopes("fight-tracker-service.write"),
+    requiredScopes(SCOPES.FIGHTS_CREATE),
     validatorSchema.mwCreateFightRequest,
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
@@ -81,7 +82,7 @@ router.post(
 router.put(
     "/fight/update",
     checkJwt,
-    requiredScopes("fight-tracker-service.write"),
+    requiredScopes(SCOPES.FIGHTS_UPDATE),
     validatorSchema.mwUpdateFightRequest,
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
@@ -96,7 +97,7 @@ router.put(
 router.post(
     "/fight/delete",
     checkJwt,
-    requiredScopes("fight-tracker-service.write"),
+    requiredScopes(SCOPES.FIGHTS_DELETE),
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
         const result = await fightService.deleteFight(
@@ -110,7 +111,7 @@ router.post(
 router.post(
     "/share/create",
     checkJwt,
-    requiredScopes("fight-tracker-service.share"),
+    requiredScopes(SCOPES.SHARE_RESOURCE_CREATE),
     validatorSchema.mwCreateShareRequest,
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
@@ -122,7 +123,7 @@ router.post(
 router.post(
     "/share/accept",
     checkJwt,
-    requiredScopes("fight-tracker-service.share"),
+    requiredScopes(SCOPES.SHARE_RESOURCE_ACCEPT),
     validatorSchema.mwAcceptShareRequest,
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
@@ -137,7 +138,7 @@ router.post(
 router.post(
     "/share/delete",
     checkJwt,
-    requiredScopes("fight-tracker-service.share"),
+    requiredScopes(SCOPES.SHARE_RESOURCE_DELETE),
     validatorSchema.mwDeleteShareRequest,
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);

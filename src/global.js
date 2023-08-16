@@ -14,8 +14,19 @@ const ACCESS_ROLE = {
     EDIT_INVITE: "EDIT_INVITE",
 };
 
+const SCOPES = {
+    FIGHTS_READ: "fights.read",
+    FIGHTS_UPDATE: "fights.update",
+    FIGHTS_CREATE: "fights.create",
+    FIGHTS_DELETE: "fights.delete",
+    SHARE_RESOURCE_CREATE: "share_resource.create",
+    SHARE_RESOURCE_DELETE: "share_resource.delete",
+    SHARE_RESOURCE_ACCEPT: "share_resource.accept",
+};
+
 module.exports = {
     ACCESS_STATUS,
     ACCESS_ROLE,
     ACCESS_TYPE,
+    SCOPES,
 };
