@@ -1,8 +1,8 @@
-name: Docker Image
+name: Release Docker Image
 
 on:
-    push:
-        branches: ["master"]
+    release:
+        types: [created]
 
 jobs:
     call-workflow-passing-data:
@@ -10,5 +10,5 @@ jobs:
         secrets:
             DOCKER_REGISTRY_SECRET: ${{ secrets.DOCKER_REGISTRY_SECRET }}
             DOCKER_REGISTRY_USER: zakred
-            DOCKER_IMAGE_NAME: zakred/fight-tracker-service:latest
+            DOCKER_IMAGE_NAME: zakred/fight-tracker-service:${{github.ref_name}}
             DOCKER_CONTEXT_PATH: .

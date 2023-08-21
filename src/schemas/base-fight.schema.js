@@ -1,10 +1,10 @@
 const Joi = require("joi");
 
 const schema = Joi.object({
-    fightName: Joi.string().alphanum().required(),
-    description: Joi.string().required(),
-    fightImageUrl: Joi.string().uri().required(),
-    initiatorName: Joi.string().required(),
+    fightName: Joi.string().max(120).required(),
+    description: Joi.string().max(5000).required(),
+    fightImageUrl: Joi.string().uri().max(200000).optional().allow(""),
+    initiatorName: Joi.string().max(30),
     severity: Joi.string()
         .pattern(new RegExp("^HIGH$|^MEDIUM$|^LOW$"))
         .required(),
@@ -12,35 +12,38 @@ const schema = Joi.object({
         .pattern(new RegExp("^NOT_STARTED$|^IN_PROGRESS$|^COMPLETED$"))
         .required(),
     startDate: Joi.date().required(),
-    endDate: Joi.date().optional(),
+    endDate: Joi.date().allow("").optional(),
     expectedEndDate: Joi.date().required(),
     isRemediable: Joi.bool().required(),
-    possibleResolutions: Joi.array().optional(),
-    personsInvolved: Joi.array().required().items({
-        name: Joi.string().required(),
-        avatarUrl: Joi.string().uri().optional(),
-        label1: Joi.string().optional(),
-        label2: Joi.string().optional(),
-    }),
+    possibleResolutions: Joi.array().items(Joi.string().max(150)).optional(),
+    personsInvolved: Joi.array()
+        .optional()
+        .items({
+            name: Joi.string().max(30).required(),
+            avatarUrl: Joi.string().uri().allow("").max(2000).optional(),
+            label1: Joi.string().max(10).allow("").optional(),
+            label2: Joi.string().max(10).allow("").optional(),
+        }),
     evidence: Joi.array()
         .optional()
         .items({
-            name: Joi.string().required(),
-            url: Joi.string().uri().required(),
+            name: Joi.string().max(30).required(),
+            url: Joi.string().uri().max(2000).required(),
             type: Joi.string().pattern(new RegExp("^IMAGE$|^FILE$")).required(),
-            size: Joi.string().optional(),
+            size: Joi.string().allow("").max(20).optional(),
         }),
     comments: Joi.array()
-        .required()
+        .optional()
         .items({
-            name: Joi.string().required(),
-            avatarUrl: Joi.string().uri().optional(),
-            message: Joi.string().required(),
+            name: Joi.string().max(30).required(),
+            avatarUrl: Joi.string().uri().allow("").max(2000).optional(),
+            message: Joi.string().max(150).required(),
             createdAt: Joi.string()
                 .required()
                 .pattern(new RegExp("^(0|[1-9][0-9]*)$")),
         }),
     listId: Joi.string()
+        .allow("")
         .optional()
         .guid({
             version: ["uuidv4", "uuidv5"],
