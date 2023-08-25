@@ -1,6 +1,6 @@
 const global = require("../../global");
 const errorUtil = require("../../util/error-util");
-const {ACCESS_ROLE} = require("../../global");
+const {ACCESS_ROLE, ACCESS_STATUS} = require("../../global");
 
 class AccessService {
     constructor(accessRepository) {
@@ -8,7 +8,9 @@ class AccessService {
     }
 
     getAccessGranted(authUser) {
-        return this.repo.findAllAuthenticatedUser(authUser);
+        const all = this.repo.findAllAuthenticatedUser(authUser);
+        all.filter((x) => x.status === ACCESS_STATUS.ACCEPTED);
+        return all;
     }
 
     isResourceAuthorizedToShare = async (authUser, resourceId) => {
@@ -19,7 +21,8 @@ class AccessService {
         return resources.find(
             (x) =>
                 x.subjectId === authUser.id &&
-                x.role === ACCESS_ROLE.EDIT_INVITE,
+                x.role === ACCESS_ROLE.EDIT_INVITE &&
+                x.status === ACCESS_STATUS.ACCEPTED,
         );
     };
     getFightIdsShared = (accessArray) => {
@@ -31,14 +34,16 @@ class AccessService {
             .map((a) => a.resourceId);
     };
 
-    setFightsAccessMetaData = (fights) => {
-        return fights.map((f) => {
-            const auths = this.repo.findAllAcceptedForFight(f.fightId);
+    setFightsAccessMetaData = async (fights) => {
+        const result = [];
+        for (const f of fights) {
+            const auths = await this.repo.findAllForResource(f.fightId);
             const sharedWith = [];
             for (const auth of auths) {
                 sharedWith.push({
                     email: auth.email,
                     role: auth.role,
+                    status: auth.status,
                 });
             }
             const meta = {
@@ -46,8 +51,9 @@ class AccessService {
                     sharedWith: sharedWith,
                 },
             };
-            return {...f, ...meta};
-        });
+            result.push({...f, ...meta});
+        }
+        return result;
     };
 
     createAccess = async (authUser, req) => {

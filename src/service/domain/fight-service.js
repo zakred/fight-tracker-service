@@ -15,7 +15,9 @@ class FightService {
             authUser,
             fightIdsShared,
         );
-        return this.accessService.setFightsAccessMetaData(allFights);
+        const fightsWithMetaData =
+            await this.accessService.setFightsAccessMetaData(allFights);
+        return fightsWithMetaData;
     };
 
     createFight = async (authUser, req) => {
