@@ -135,7 +135,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n        {\r\n            \"email\": \"test@email.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n        {\r\n            \"email\": \"1arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"2arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"3arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -181,6 +181,60 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update Role",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n        {\r\n            \"email\": \"hi@fight-tracker.com\",\r\n            \"role\": \"EDIT\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/share/update-role",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"share",
+								"update-role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Share",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n                {\r\n            \"email\": \"1arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"2arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/share/delete",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"share",
+								"delete"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -190,7 +244,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "",
+				"value": "{{ACCESS_TOKEN}}",
 				"type": "string"
 			}
 		]

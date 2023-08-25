@@ -74,6 +74,19 @@ class AccessRepository {
         return 1;
     };
 
+    updateRole = async (authUser, person, resourceId) => {
+        const access = await this.db.access.find(
+            (x) => x.resourceId === resourceId && x.email === person.email,
+        );
+        if (!access) {
+            errorUtil.throwNotFound(resourceId);
+        }
+        access.role = person.role;
+        entityUtil.addUpdateAudit(authUser, access);
+        this.#persistDB(this.db);
+        return 1;
+    };
+
     save = async (authUser, req) => {
         let entity = this.db.access.find((x) => x.accessId === req.accessId);
         if (!entity) {

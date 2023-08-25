@@ -22,6 +22,7 @@ const SCOPES = {
     SHARE_RESOURCE_CREATE: "share_resource.create",
     SHARE_RESOURCE_DELETE: "share_resource.delete",
     SHARE_RESOURCE_ACCEPT: "share_resource.accept",
+    SHARE_RESOURCE_UPDATE_ROLE: "share_resource.update_role",
 };
 
 module.exports = {

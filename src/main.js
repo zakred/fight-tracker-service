@@ -135,6 +135,21 @@ router.post(
     }),
 );
 
+router.put(
+    "/share/update-role",
+    checkJwt,
+    requiredScopes(SCOPES.SHARE_RESOURCE_UPDATE_ROLE),
+    validatorSchema.mwUpdateRoleShareRequest,
+    asyncHandler(async (req, res) => {
+        const authUser = getAuthUser(req.auth);
+        const result = await shareService.updateRole(
+            authUser,
+            req.validatedBody,
+        );
+        res.status(201).json(result ?? {message: "success"});
+    }),
+);
+
 router.post(
     "/share/delete",
     checkJwt,

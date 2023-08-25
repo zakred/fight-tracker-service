@@ -16,7 +16,7 @@ class AccessService {
     isResourceAuthorizedToShare = async (authUser, resourceId) => {
         const resources = await this.repo.findAllForResource(resourceId);
         if (!resources) {
-            errorUtil.throwNotFound(resourceId);
+            return false;
         }
         return resources.find(
             (x) =>
@@ -66,6 +66,17 @@ class AccessService {
                 req.persons[i],
                 req.resourceId,
                 req.type,
+            );
+        }
+        return req.persons.length;
+    };
+
+    updateRole = async (authUser, req) => {
+        for (const i in req.persons) {
+            await this.repo.updateRole(
+                authUser,
+                req.persons[i],
+                req.resourceId,
             );
         }
         return req.persons.length;
