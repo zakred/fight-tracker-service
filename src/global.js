@@ -1,8 +1,3 @@
-const ACCESS_STATUS = {
-    INVITED: "INVITED",
-    ACCEPTED: "ACCEPTED",
-};
-
 const ACCESS_TYPE = {
     FIGHT: "FIGHT",
     LIST: "LIST",
@@ -21,12 +16,10 @@ const SCOPES = {
     FIGHTS_DELETE: "fights.delete",
     SHARE_RESOURCE_CREATE: "share_resource.create",
     SHARE_RESOURCE_DELETE: "share_resource.delete",
-    SHARE_RESOURCE_ACCEPT: "share_resource.accept",
     SHARE_RESOURCE_UPDATE_ROLE: "share_resource.update_role",
 };
 
 module.exports = {
-    ACCESS_STATUS,
     ACCESS_ROLE,
     ACCESS_TYPE,
     SCOPES,

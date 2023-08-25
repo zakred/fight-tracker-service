@@ -135,7 +135,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n        {\r\n            \"email\": \"1arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"2arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"3arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n        {\r\n            \"email\": \"1arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"2arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"hi@fight-tracker.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -150,33 +150,6 @@
 							"path": [
 								"share",
 								"create"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Accept Share",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{WEB_FQDN}}/share/accept",
-							"host": [
-								"{{WEB_FQDN}}"
-							],
-							"path": [
-								"share",
-								"accept"
 							]
 						}
 					},
@@ -216,7 +189,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n                {\r\n            \"email\": \"1arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        },\r\n        {\r\n            \"email\": \"2arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"resourceId\": \"{{FIGHT_ID}}\",\r\n    \"type\": \"FIGHT\",\r\n    \"persons\": [\r\n        {\r\n            \"email\": \"1arthur@email.com\",\r\n            \"role\": \"VIEW\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

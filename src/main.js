@@ -120,21 +120,6 @@ router.post(
     }),
 );
 
-router.post(
-    "/share/accept",
-    checkJwt,
-    requiredScopes(SCOPES.SHARE_RESOURCE_ACCEPT),
-    validatorSchema.mwAcceptShareRequest,
-    asyncHandler(async (req, res) => {
-        const authUser = getAuthUser(req.auth);
-        const result = await accessService.acceptSharedResource(
-            authUser,
-            req.validatedBody,
-        );
-        res.status(201).json(result ?? {message: "success"});
-    }),
-);
-
 router.put(
     "/share/update-role",
     checkJwt,

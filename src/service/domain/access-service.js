@@ -8,9 +8,7 @@ class AccessService {
     }
 
     getAccessGranted(authUser) {
-        const all = this.repo.findAllAuthenticatedUser(authUser);
-        all.filter((x) => x.status === ACCESS_STATUS.ACCEPTED);
-        return all;
+        return this.repo.findAllAuthenticatedUser(authUser);
     }
 
     isResourceAuthorizedToShare = async (authUser, resourceId) => {
@@ -20,9 +18,8 @@ class AccessService {
         }
         return resources.find(
             (x) =>
-                x.subjectId === authUser.id &&
-                x.role === ACCESS_ROLE.EDIT_INVITE &&
-                x.status === ACCESS_STATUS.ACCEPTED,
+                x.email === authUser.email &&
+                x.role === ACCESS_ROLE.EDIT_INVITE,
         );
     };
     getFightIdsShared = (accessArray) => {
@@ -81,22 +78,6 @@ class AccessService {
         }
         return req.persons.length;
     };
-
-    async acceptSharedResource(authUser, req) {
-        const access = await this.repo.findByResourceIdAndEmail(
-            req.resourceId,
-            authUser.email,
-        );
-        if (!access) {
-            errorUtil.throwNotFound(req.resourceId);
-        }
-        if (authUser.email !== access.email) {
-            errorUtil.throwForbiddenEntity(req.resourceId);
-        }
-        access.status = global.ACCESS_STATUS.ACCEPTED;
-        await this.repo.save(authUser, access);
-        return 0;
-    }
 
     deleteAccess = async (req) => {
         for (const person of req.persons) {

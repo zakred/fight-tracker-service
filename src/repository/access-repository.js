@@ -31,21 +31,12 @@ class AccessRepository {
     };
 
     findAllAuthenticatedUser(authUser) {
-        return this.db.access.filter((x) => x.subjectId === authUser.id);
+        return this.db.access.filter((x) => x.email === authUser.email);
     }
 
     findAllForResource = async (resourceId) => {
         return this.db.access.filter((x) => x.resourceId === resourceId);
     };
-
-    findAllAcceptedForFight(fightId) {
-        return this.db.access.filter(
-            (x) =>
-                x.type === ACCESS_TYPE.FIGHT &&
-                x.status === ACCESS_STATUS.ACCEPTED &&
-                x.resourceId === fightId,
-        );
-    }
 
     create = async (authUser, person, resourceId, type) => {
         const reqAccess = {
@@ -54,7 +45,6 @@ class AccessRepository {
             resourceId: resourceId,
             role: person.role,
             email: person.email,
-            status: global.ACCESS_STATUS.INVITED,
         };
 
         const access = await this.db.access.find(
@@ -83,22 +73,6 @@ class AccessRepository {
         }
         access.role = person.role;
         entityUtil.addUpdateAudit(authUser, access);
-        this.#persistDB(this.db);
-        return 1;
-    };
-
-    save = async (authUser, req) => {
-        let entity = this.db.access.find((x) => x.accessId === req.accessId);
-        if (!entity) {
-            errorUtil.throwNotFound(req.accessId);
-        }
-        entity.subjectId = authUser.id;
-        entityUtil.addUpdateAudit(authUser, req);
-        entityUtil.updateEntityAndAddExtraProperties(entity, req);
-        this.db.access = this.db.access.filter(
-            (x) => x.accessId !== req.accessId,
-        );
-        this.db.access.push(entity);
         this.#persistDB(this.db);
         return 1;
     };
