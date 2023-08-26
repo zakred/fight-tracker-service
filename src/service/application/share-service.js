@@ -2,10 +2,16 @@ const global = require("../../global");
 const errorUtil = require("../../util/error-util");
 
 class ShareService {
-    constructor(fightService, accessService, emailService) {
+    constructor(
+        fightService,
+        accessService,
+        emailService,
+        notificationService,
+    ) {
         this.fightService = fightService;
         this.accessService = accessService;
         this.emailService = emailService;
+        this.notificationService = notificationService;
     }
 
     create = async (authUser, req) => {
@@ -14,6 +20,17 @@ class ShareService {
                 await this.#ensureAuthUserIsAuthorized(req, authUser);
                 await this.accessService.createAccess(authUser, req);
                 const emailsToNotify = req.persons.map((x) => x.email);
+                const fight = await this.fightService.getFightById(
+                    req.resourceId,
+                );
+                for (const email of emailsToNotify) {
+                    await this.notificationService.notifyShare(
+                        authUser,
+                        fight.fightName,
+                        "fight",
+                        email,
+                    );
+                }
                 this.emailService.sendShareInvitationEmailBulk(
                     emailsToNotify,
                     authUser.name,

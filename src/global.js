@@ -17,10 +17,23 @@ const SCOPES = {
     SHARE_RESOURCE_CREATE: "share_resource.create",
     SHARE_RESOURCE_DELETE: "share_resource.delete",
     SHARE_RESOURCE_UPDATE_ROLE: "share_resource.update_role",
+    NOTIFICATIONS_READ: "notifications.read",
+    NOTIFICATIONS_DELETE: "notifications.delete",
+};
+
+const textShortener = (txt, targetLength = 80) => {
+    if (!txt) {
+        return txt;
+    }
+    if (txt.length > targetLength) {
+        return txt.slice(0, targetLength - 1) + "...";
+    }
+    return txt;
 };
 
 module.exports = {
     ACCESS_ROLE,
     ACCESS_TYPE,
     SCOPES,
+    textShortener,
 };

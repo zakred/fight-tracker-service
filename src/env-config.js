@@ -5,6 +5,10 @@ const AUTH_ISSUER = getRequired("AUTH_ISSUER");
 const ACCESS_DB_FILENAME = getOrDefault("ACCESS_DB_FILENAME", "access-db.json");
 const DB_FILENAME = getOrDefault("DB_FILENAME", "db.json");
 const LIST_DB_FILENAME = getOrDefault("LIST_DB_FILENAME", "lists-db.json");
+const NOTIFICATIONS_DB_FILENAME = getOrDefault(
+    "NOTIFICATIONS_DB_FILENAME",
+    "notifications-db.json",
+);
 
 const AWS_ACCESS_KEY_ID = getRequired("AWS_ACCESS_KEY_ID");
 const AWS_SECRET_ACCESS_KEY = getRequired("AWS_SECRET_ACCESS_KEY");
@@ -56,6 +60,7 @@ module.exports = {
     DB_FILENAME,
     ACCESS_DB_FILENAME,
     LIST_DB_FILENAME,
+    NOTIFICATIONS_DB_FILENAME,
     AWS_REGION,
     email,
 };

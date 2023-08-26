@@ -3,7 +3,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 const {auth, requiredScopes} = require("express-oauth2-jwt-bearer");
 const envConfig = require("./env-config");
-const global = require("./global");
 const errorUtil = require("./util/error-util");
 const AccessRepository = require("./repository/access-repository");
 const accessService = new (require("./service/domain/access-service"))(
@@ -22,10 +21,19 @@ const emailService = new (require("./service/infrastructure/email-service"))(
     envConfig.AWS_REGION,
     envConfig.email,
 );
+const notificationRepository =
+    new (require("./repository/notification-repository"))(
+        envConfig.NOTIFICATIONS_DB_FILENAME,
+    );
+const notificationService =
+    new (require("./service/domain/notification-service"))(
+        notificationRepository,
+    );
 const shareService = new (require("./service/application/share-service"))(
     fightService,
     accessService,
     emailService,
+    notificationService,
 );
 
 const checkJwt = auth({
@@ -143,6 +151,34 @@ router.post(
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
         const result = await shareService.delete(authUser, req.validatedBody);
+        res.status(201).json(result ?? {message: "success"});
+    }),
+);
+
+router.get(
+    "/notifications/retrieve",
+    checkJwt,
+    requiredScopes(SCOPES.NOTIFICATIONS_READ),
+    asyncHandler(async (req, res) => {
+        const authUser = getAuthUser(req.auth);
+        const result = await notificationService.retrieveAllAuthenticated(
+            authUser,
+        );
+        res.status(200).json(result ?? {error: "no response"});
+    }),
+);
+
+router.post(
+    "/notifications/delete",
+    checkJwt,
+    requiredScopes(SCOPES.NOTIFICATIONS_DELETE),
+    validatorSchema.mwDeleteNotificationsRequest,
+    asyncHandler(async (req, res) => {
+        const authUser = getAuthUser(req.auth);
+        const result = await notificationService.deleteNotifications(
+            authUser,
+            req.validatedBody.notifications,
+        );
         res.status(201).json(result ?? {message: "success"});
     }),
 );
