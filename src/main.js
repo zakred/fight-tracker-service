@@ -86,7 +86,7 @@ router.put(
     validatorSchema.mwUpdateFightRequest,
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
-        const result = await fightService.updateFight(
+        const result = await fightService.updateFightEnsureAccess(
             authUser,
             req.validatedBody,
         );
@@ -101,8 +101,8 @@ router.post(
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
         const result = await fightService.deleteFight(
-            req.body.fightId,
             authUser,
+            req.body.fightId,
         );
         res.status(200).json(result ?? {error: "no response"});
     }),

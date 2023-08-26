@@ -1,3 +1,5 @@
+const errorUtil = require("../../util/error-util");
+
 class FightService {
     constructor(fightRepository, accessService) {
         this.repo = fightRepository;
@@ -25,12 +27,57 @@ class FightService {
         return {fightId: req.fightId};
     };
 
-    updateFight = async (authUser, req) => {
+    updateFightEnsureAccess = async (authUser, req) => {
+        await this.#ensureAuthUserIsAuthorizedEdit(req.fightId, authUser);
+
         await this.repo.save(authUser, req);
         return {message: "success"};
     };
 
-    deleteFight = async (fightId) => {
+    async #ensureAuthUserIsAuthorized(fightId, authUser, shareType) {
+        let fight = await this.getFightById(fightId);
+        if (!fight) {
+            errorUtil.throwNotFound(fightId);
+        }
+        if (fight.owner.id !== authUser.id) {
+            const isAuthorizedToShare =
+                await this.accessService.isResourceAuthorized(
+                    authUser,
+                    fightId,
+                    shareType,
+                );
+            if (!isAuthorizedToShare) {
+                errorUtil.throwForbiddenEntity(fightId);
+            }
+        }
+    }
+
+    async #ensureAuthUserIsAuthorizedShare(fightId, authUser) {
+        return await this.#ensureAuthUserIsAuthorized(
+            fightId,
+            authUser,
+            "SHARE",
+        );
+    }
+
+    async #ensureAuthUserIsAuthorizedEdit(fightId, authUser) {
+        return await this.#ensureAuthUserIsAuthorized(
+            fightId,
+            authUser,
+            "EDIT",
+        );
+    }
+
+    deleteFight = async (authUser, fightId) => {
+        // only the owner ID can delete the fight
+        let fight = await this.getFightById(fightId);
+        if (!fight) {
+            errorUtil.throwNotFound(fightId);
+        }
+        if (fight.owner.id !== authUser.id) {
+            errorUtil.throwForbiddenEntity(fightId);
+        }
+
         await this.repo.delete(fightId);
         await this.accessService.deleteAllFor(fightId);
         return {message: "success"};

@@ -11,16 +11,25 @@ class AccessService {
         return this.repo.findAllAuthenticatedUser(authUser);
     }
 
-    isResourceAuthorizedToShare = async (authUser, resourceId) => {
+    isResourceAuthorized = async (authUser, resourceId, shareType) => {
         const resources = await this.repo.findAllForResource(resourceId);
+        let isRole = (x) => x.role === ACCESS_ROLE.EDIT_INVITE;
+        if (shareType === "EDIT") {
+            // Higher role has access too
+            isRole = (x) =>
+                x.role === ACCESS_ROLE.EDIT ||
+                x.role === ACCESS_ROLE.EDIT_INVITE;
+        }
         if (!resources) {
             return false;
         }
-        return resources.find(
-            (x) =>
-                x.email === authUser.email &&
-                x.role === ACCESS_ROLE.EDIT_INVITE,
-        );
+        return resources.find((x) => x.email === authUser.email && isRole(x));
+    };
+    isResourceAuthorizedToShare = async (authUser, resourceId) => {
+        return await this.isResourceAuthorized(authUser, resourceId, "SHARE");
+    };
+    isResourceAuthorizedToEdit = async (authUser, resourceId) => {
+        return await this.isResourceAuthorized(authUser, resourceId, "EDIT");
     };
     getFightIdsShared = (accessArray) => {
         if (!accessArray) {
@@ -40,7 +49,6 @@ class AccessService {
                 sharedWith.push({
                     email: auth.email,
                     role: auth.role,
-                    status: auth.status,
                 });
             }
             const meta = {
