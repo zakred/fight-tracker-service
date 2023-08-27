@@ -210,6 +210,99 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "notifications",
+			"item": [
+				{
+					"name": "Retrieve Notifications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.environment.set('FIRST_NOTIFICATION_ID', pm.response.json()[0].notificationId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{WEB_FQDN}}/notifications/retrieve",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"notifications",
+								"retrieve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Notifications",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"notifications\": [\r\n        {\r\n            \"notificationId\": \"{{FIRST_NOTIFICATION_ID}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/notifications/delete",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"notifications",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "email-subscription",
+			"item": [
+				{
+					"name": "Update Subscription",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": \"eyJlbWFpbCI6ImVtYWlsQGV4YW1wbGUuY29tIiwiY2F0ZWdvcnkiOiJjYXRlZ29yeSIsIm5vbmNlIjoibm9uY2UiLCJzaWduYXR1cmUiOiJzaWduYXR1cmUifQ\",\r\n    \"decision\": \"UNSUBSCRIBED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{WEB_FQDN}}/email-subscription/update",
+							"host": [
+								"{{WEB_FQDN}}"
+							],
+							"path": [
+								"email-subscription",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {

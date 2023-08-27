@@ -8,6 +8,8 @@
     "main": "src/main.js",
     "scripts": {
         "start": "node src/main.js",
+        "test": "mocha test/**/*.test.js --parallel --ui tdd --reporter spec --colors",
+        "test-watch": "yarn test -- --watch",
         "dev": "nodemon src/main.js",
         "doc": "jsdoc src",
         "format": "prettier . --write",
@@ -25,8 +27,12 @@
         "uuid": "^9.0.0"
     },
     "devDependencies": {
+        "@jest/expect": "^29.6.4",
+        "jest-mock": "^29.6.3",
         "jsdoc": "^4.0.2",
+        "mocha": "^10.2.0",
         "nodemon": "^3.0.1",
+        "nyc": "^15.1.0",
         "prettier": "^3.0.1"
     }
 }

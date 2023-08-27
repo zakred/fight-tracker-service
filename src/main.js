@@ -4,6 +4,10 @@ const cors = require("cors");
 const {auth, requiredScopes} = require("express-oauth2-jwt-bearer");
 const envConfig = require("./env-config");
 const errorUtil = require("./util/error-util");
+const timeService = new (require("./service/infrastructure/time-service"))();
+const HMACService = new (require("./service/infrastructure/hmac-service"))(
+    envConfig.SERVER_SIGNING_SECRET_KEY,
+);
 const AccessRepository = require("./repository/access-repository");
 const accessService = new (require("./service/domain/access-service"))(
     new AccessRepository(envConfig.ACCESS_DB_FILENAME),
@@ -17,10 +21,20 @@ const fightService = new FightService(
 );
 const validatorSchema =
     new (require("./service/domain/schema-validator-service"))();
+const emailPreferenceRepository =
+    new (require("./repository/email-preference-repository"))(
+        envConfig.EMAIL_PREFERENCES_DB_FILENAME,
+    );
 const emailService = new (require("./service/infrastructure/email-service"))(
-    envConfig.AWS_REGION,
-    envConfig.email,
+    HMACService,
+    emailPreferenceRepository,
+    timeService,
 );
+const awsEmailService =
+    new (require("./service/infrastructure/aws-email-service"))(
+        envConfig.AWS_REGION,
+        envConfig.email,
+    );
 const notificationRepository =
     new (require("./repository/notification-repository"))(
         envConfig.NOTIFICATIONS_DB_FILENAME,
@@ -32,8 +46,10 @@ const notificationService =
 const shareService = new (require("./service/application/share-service"))(
     fightService,
     accessService,
-    emailService,
+    awsEmailService,
     notificationService,
+    emailService,
+    envConfig.email.FIGHT_OVERVIEW_PATH,
 );
 
 const checkJwt = auth({
@@ -180,6 +196,18 @@ router.post(
             req.validatedBody.notifications,
         );
         res.status(201).json(result ?? {message: "success"});
+    }),
+);
+
+router.put(
+    "/email-subscription/update",
+    validatorSchema.mwUpdateEmailSubscriptionRequest,
+    asyncHandler(async (req, res) => {
+        await emailService.updateEmailPreference(
+            req.validatedBody.data,
+            req.validatedBody.decision,
+        );
+        res.status(201).json({message: "success"});
     }),
 );
 

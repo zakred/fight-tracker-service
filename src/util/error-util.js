@@ -4,6 +4,7 @@ const errors = {
     FORBIDDEN_ENTITY_ACCESS: "FORBIDDEN_ENTITY_ACCESS",
     OWN_SHARING_DISABLED: "OWN_SHARING_DISABLED",
     TYPE_NOT_SUPPORTED: "TYPE_NOT_SUPPORTED",
+    REQUEST_EXPIRED: "REQUEST_EXPIRED",
 };
 
 const authErrors = {
@@ -52,6 +53,13 @@ const throwTypeNotSupported = (type = "") => {
     };
 };
 
+const throwRequestExpired = (request = "") => {
+    throw {
+        name: errors.REQUEST_EXPIRED,
+        status: 409,
+        message: `Request "${request}" expired.`,
+    };
+};
 const mwError = (err, req, res, next) => {
     if (err.name in errors) {
         let statusCode = err.status;
@@ -80,4 +88,5 @@ module.exports = {
     throwForbiddenEntity,
     throwTypeNotSupported,
     throwCantShareWithYourself,
+    throwRequestExpired,
 };

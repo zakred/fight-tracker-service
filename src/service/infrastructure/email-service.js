@@ -1,101 +1,66 @@
-const AWS = require("aws-sdk");
-const fs = require("fs");
-
-const sharedInvitationHtml = fs.readFileSync(
-    "src/email-templates/ft-fight-shared-invitation.html",
-    "utf8",
-);
+const {EMAIL_SUBSCRIPTION_DECISION} = require("../../global");
+const errorUtil = require("../../util/error-util");
 
 class EmailService {
-    constructor(awsRegion, emailConfig) {
-        this.emailConfig = emailConfig;
-
-        AWS.config.update({
-            region: awsRegion,
-        });
-
-        //this.deleteTemplate('FIGHT_SHARED_INVITATION')
-        //this.createTemplate('FIGHT_SHARED_INVITATION', 'A fight has been shared!', sharedInvitationHtml);
+    constructor(HMACService, emailPreferenceRepository, timeService) {
+        this.HMACService = HMACService;
+        this.emailPreferenceRepository = emailPreferenceRepository;
+        this.timeService = timeService;
     }
 
-    deleteTemplate = (name) => {
-        const sesv2 = new AWS.SESV2({
-            apiVersion: this.emailConfig.SES_API_VERSION,
-        });
-        sesv2.deleteEmailTemplate({TemplateName: name}, function (err, data) {
-            if (err) console.log(err, err.stack);
-            else console.log(data);
-        });
-    };
-    createTemplate(name, subject, html) {
-        try {
-            const sesv2 = new AWS.SESV2({
-                apiVersion: this.emailConfig.SES_API_VERSION,
-            });
-            var params = {
-                TemplateContent: {
-                    Html: html,
-                    Subject: subject,
-                },
-                TemplateName: name,
-            };
+    createUnsubscribeData(email, category) {
+        const expiration = this.timeService.unixTimestampInTwoMonths();
+        const result = this.HMACService.sign([email, category, expiration]);
+        const payload = {
+            email,
+            category,
+            expiration,
+            nonce: result.nonce,
+            signature: result.signature,
+        };
+        let base64url = Buffer.from(JSON.stringify(payload)).toString(
+            "base64url",
+        );
+        return base64url;
+    }
 
-            sesv2.createEmailTemplate(params, function (err, data) {
-                if (err) console.log(err, err.stack);
-                else console.log(data);
-            });
-        } catch (e) {
-            console.log(e);
+    updateEmailPreference(base64Url, decision) {
+        const jsonString = Buffer.from(base64Url, "base64url").toString(
+            "ascii",
+        );
+        const payload = JSON.parse(jsonString);
+        let isExpired = this.timeService.isUnixTimestampBeforeNow(
+            payload.expiration,
+        );
+        if (isExpired) {
+            errorUtil.throwRequestExpired();
+        }
+        let isSignatureValid = this.HMACService.verifySignature(
+            [payload.email, payload.category, payload.expiration],
+            payload.nonce,
+            payload.signature,
+        );
+        if (isSignatureValid) {
+            this.emailPreferenceRepository.save(
+                payload.email,
+                payload.category,
+                decision,
+            );
+        } else {
+            errorUtil.throwForbiddenEntity();
         }
     }
 
-    sendShareInvitationEmailBulk = (emails, issuer) => {
-        const sesv2 = new AWS.SESV2({
-            apiVersion: this.emailConfig.SES_API_VERSION,
-        });
-
-        const defaultData = {
-            issuer: this.emailConfig.DEFAULT_ISSUER,
-            "privacy-policy": this.emailConfig.PRIVACY_POLICY_URL,
-            "terms-of-use": this.emailConfig.TERMS_OF_USE_URL,
-            unsubscribe: this.emailConfig.UNSUBSCRIBE_URL,
-            "accept-link": this.emailConfig.DEFAULT_ACCEPT_LINK,
-        };
-
-        const data = {
-            issuer: issuer,
-        };
-
-        const params = {
-            BulkEmailEntries: [],
-            DefaultContent: {
-                Template: {
-                    TemplateData: JSON.stringify(defaultData),
-                    TemplateName:
-                        this.emailConfig.SHARED_INVITATION_TEMPLATE_NAME,
-                },
-            },
-            FromEmailAddress: this.emailConfig.EMAIL_FROM,
-        };
-
-        for (let i = 0; i < emails.length; i++) {
-            const to = {
-                Destination: {
-                    ToAddresses: [emails[i]],
-                },
-                ReplacementEmailContent: {
-                    ReplacementTemplate: {
-                        ReplacementTemplateData: JSON.stringify(data),
-                    },
-                },
-            };
-            params.BulkEmailEntries.push(to);
+    isEmailUnsubscribedFromCategory = async (email, category) => {
+        const preference =
+            await this.emailPreferenceRepository.findByEmailCategory(
+                email,
+                category,
+            );
+        if (!preference) {
+            return false;
         }
-
-        sesv2.sendBulkEmail(params, function (err, data) {
-            if (err) console.log(err, err.stack);
-            else console.log(data);
-        });
+        return preference.decision === EMAIL_SUBSCRIPTION_DECISION.UNSUBSCRIBED;
     };
 }
 

@@ -21,6 +21,15 @@ const SCOPES = {
     NOTIFICATIONS_DELETE: "notifications.delete",
 };
 
+const EMAIL_CATEGORY = {
+    SHARED_RESOURCES: "Shared Resources",
+};
+
+const EMAIL_SUBSCRIPTION_DECISION = {
+    SUBSCRIBED: "SUBSCRIBED",
+    UNSUBSCRIBED: "UNSUBSCRIBED",
+};
+
 const textShortener = (txt, targetLength = 80) => {
     if (!txt) {
         return txt;
@@ -35,5 +44,7 @@ module.exports = {
     ACCESS_ROLE,
     ACCESS_TYPE,
     SCOPES,
+    EMAIL_SUBSCRIPTION_DECISION,
+    EMAIL_CATEGORY,
     textShortener,
 };

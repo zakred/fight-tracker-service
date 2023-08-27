@@ -9,7 +9,12 @@ const NOTIFICATIONS_DB_FILENAME = getOrDefault(
     "NOTIFICATIONS_DB_FILENAME",
     "notifications-db.json",
 );
+const EMAIL_PREFERENCES_DB_FILENAME = getOrDefault(
+    "EMAIL_PREFERENCES_DB_FILENAME",
+    "email-preferences-db.json",
+);
 
+const SERVER_SIGNING_SECRET_KEY = getRequired("SERVER_SIGNING_SECRET_KEY");
 const AWS_ACCESS_KEY_ID = getRequired("AWS_ACCESS_KEY_ID");
 const AWS_SECRET_ACCESS_KEY = getRequired("AWS_SECRET_ACCESS_KEY");
 const AWS_REGION = getOrDefault("AWS_REGION", "us-east-1");
@@ -26,9 +31,13 @@ const email = {
         "TERMS_OF_USE_URL",
         FQDN_EMAIL_TPL + "/terms",
     ),
+    FIGHT_OVERVIEW_PATH: getOrDefault(
+        "FIGHT_OVERVIEW_PATH",
+        FQDN_EMAIL_TPL + "/fights-overview",
+    ),
     UNSUBSCRIBE_URL: getOrDefault(
         "UNSUBSCRIBE_URL",
-        FQDN_EMAIL_TPL + "/mail-unsubscribe",
+        FQDN_EMAIL_TPL + "/email-subscription",
     ),
     DEFAULT_ACCEPT_LINK: getOrDefault("DEFAULT_ACCEPT_LINK", FQDN_EMAIL_TPL),
     DEFAULT_ISSUER: getOrDefault("DEFAULT_ISSUER", "Someone"),
@@ -60,7 +69,9 @@ module.exports = {
     DB_FILENAME,
     ACCESS_DB_FILENAME,
     LIST_DB_FILENAME,
+    EMAIL_PREFERENCES_DB_FILENAME,
     NOTIFICATIONS_DB_FILENAME,
     AWS_REGION,
     email,
+    SERVER_SIGNING_SECRET_KEY,
 };

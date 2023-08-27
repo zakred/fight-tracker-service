@@ -1,17 +1,22 @@
 const global = require("../../global");
 const errorUtil = require("../../util/error-util");
+const {EMAIL_CATEGORY} = require("../../global");
 
 class ShareService {
     constructor(
         fightService,
         accessService,
-        emailService,
+        awsEmailService,
         notificationService,
+        emailService,
+        fightOverviewPath,
     ) {
         this.fightService = fightService;
         this.accessService = accessService;
-        this.emailService = emailService;
+        this.awsEmailService = awsEmailService;
         this.notificationService = notificationService;
+        this.emailService = emailService;
+        this.fightOverviewPath = fightOverviewPath;
     }
 
     create = async (authUser, req) => {
@@ -31,8 +36,27 @@ class ShareService {
                         email,
                     );
                 }
-                this.emailService.sendShareInvitationEmailBulk(
-                    emailsToNotify,
+                const emailSubscribed = emailsToNotify.filter((email) =>
+                    this.emailService.isEmailUnsubscribedFromCategory(
+                        email,
+                        EMAIL_CATEGORY.SHARED_RESOURCES,
+                    ),
+                );
+                const emailsData = emailSubscribed.map((email) => {
+                    const unsubscribeData =
+                        this.emailService.createUnsubscribeData(
+                            email,
+                            EMAIL_CATEGORY.SHARED_RESOURCES,
+                        );
+                    return {
+                        email,
+                        unsubscribeData,
+                        acceptLink:
+                            this.fightOverviewPath + "/" + req.resourceId,
+                    };
+                });
+                this.awsEmailService.sendShareInvitationEmailBulk(
+                    emailsData,
                     authUser.name,
                 );
                 break;

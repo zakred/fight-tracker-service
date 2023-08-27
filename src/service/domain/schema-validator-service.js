@@ -4,6 +4,7 @@ const createFightRequestSchema = require("../../schemas/create-fight-request-sch
 const updateFightRequestSchema = require("../../schemas/update-fight-request-schema");
 const deleteShareRequestSchema = require("../../schemas/delete-share-request-schema");
 const deleteNotificationsRequestSchema = require("../../schemas/delete-notifications-request-schema");
+const updateEmailSubscriptionSchema = require("../../schemas/update-email-subscription-schema");
 
 class SchemaValidatorService {
     constructor() {}
@@ -59,6 +60,16 @@ class SchemaValidatorService {
     mwDeleteNotificationsRequest = (req, res, next) => {
         return this.#createSchemaValidator(
             deleteNotificationsRequestSchema.schema,
+            req.body,
+            req,
+            res,
+            next,
+        );
+    };
+
+    mwUpdateEmailSubscriptionRequest = (req, res, next) => {
+        return this.#createSchemaValidator(
+            updateEmailSubscriptionSchema.schema,
             req.body,
             req,
             res,
