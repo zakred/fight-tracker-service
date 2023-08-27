@@ -36,13 +36,24 @@ class ShareService {
                         email,
                     );
                 }
-                const emailSubscribed = emailsToNotify.filter((email) =>
-                    this.emailService.isEmailUnsubscribedFromCategory(
-                        email,
-                        EMAIL_CATEGORY.SHARED_RESOURCES,
-                    ),
-                );
-                const emailsData = emailSubscribed.map((email) => {
+                const emailsSubscribed = [];
+                for (const email of emailsToNotify) {
+                    const isUnsubscribed =
+                        await this.emailService.isEmailUnsubscribedFromCategory(
+                            email,
+                            EMAIL_CATEGORY.SHARED_RESOURCES,
+                        );
+                    if (isUnsubscribed) {
+                        console.log(
+                            `Skipping notify email ${
+                                email.charAt(0) + email.charAt(1) + "****"
+                            } it's unsubscribed from this mailing`,
+                        );
+                    } else {
+                        emailsSubscribed.push(email);
+                    }
+                }
+                const emailsData = emailsSubscribed.map((email) => {
                     const unsubscribeData =
                         this.emailService.createUnsubscribeData(
                             email,

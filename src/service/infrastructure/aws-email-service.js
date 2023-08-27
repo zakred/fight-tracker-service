@@ -50,6 +50,10 @@ class AwsEmailService {
     }
 
     sendShareInvitationEmailBulk = (emailsData, issuer) => {
+        if (!emailsData || emailsData.length < 1) {
+            console.log("No emails to send");
+            return;
+        }
         const sesv2 = new AWS.SESV2({
             apiVersion: this.emailConfig.SES_API_VERSION,
         });
