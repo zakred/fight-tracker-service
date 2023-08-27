@@ -50,7 +50,6 @@ suite("EmailService", async function () {
             sut.updateEmailPreference(base64Url, decision);
 
             expect.jestExpect(sign).toBeCalledWith([email, category, 1000]);
-
             expect
                 .jestExpect(base64Url)
                 .toBe(
@@ -60,7 +59,6 @@ suite("EmailService", async function () {
             expect
                 .jestExpect(verifySignature)
                 .toBeCalledWith([email, category, 1000], "nonce", "signature");
-
             expect
                 .jestExpect(emailPreferenceRepoSave)
                 .toBeCalledWith(email, category, decision);
