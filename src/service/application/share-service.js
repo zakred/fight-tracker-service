@@ -1,6 +1,6 @@
 const global = require("../../global");
 const errorUtil = require("../../util/error-util");
-const {EMAIL_CATEGORY} = require("../../global");
+const {EMAIL_CATEGORY, ACCESS_TYPE} = require("../../global");
 
 class ShareService {
     constructor(
@@ -32,7 +32,7 @@ class ShareService {
                     await this.notificationService.notifyShare(
                         authUser,
                         fight.fightName,
-                        "fight",
+                        ACCESS_TYPE.FIGHT.toLowerCase(),
                         email,
                     );
                 }
