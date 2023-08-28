@@ -99,7 +99,7 @@ router.post(
             authUser,
             req.validatedBody,
         );
-        res.status(200).json(result ?? {error: "no response"});
+        res.status(201).json(result ?? {error: "no response"});
     }),
 );
 
@@ -114,7 +114,7 @@ router.put(
             authUser,
             req.validatedBody,
         );
-        res.status(200).json(result ?? {error: "no response"});
+        res.status(204).end();
     }),
 );
 
@@ -128,7 +128,7 @@ router.post(
             authUser,
             req.body.fightId,
         );
-        res.status(200).json(result ?? {error: "no response"});
+        res.status(204).end();
     }),
 );
 
@@ -155,7 +155,7 @@ router.put(
             authUser,
             req.validatedBody,
         );
-        res.status(201).json(result ?? {message: "success"});
+        res.status(204).end();
     }),
 );
 
@@ -167,7 +167,7 @@ router.post(
     asyncHandler(async (req, res) => {
         const authUser = getAuthUser(req.auth);
         const result = await shareService.delete(authUser, req.validatedBody);
-        res.status(201).json(result ?? {message: "success"});
+        res.status(204).end();
     }),
 );
 
@@ -195,7 +195,7 @@ router.post(
             authUser,
             req.validatedBody.notifications,
         );
-        res.status(201).json(result ?? {message: "success"});
+        res.status(204).end();
     }),
 );
 
@@ -207,7 +207,7 @@ router.put(
             req.validatedBody.data,
             req.validatedBody.decision,
         );
-        res.status(201).json({message: "success"});
+        res.status(204).end();
     }),
 );
 
