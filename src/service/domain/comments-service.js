@@ -1,7 +1,3 @@
-const global = require("../../global");
-const errorUtil = require("../../util/error-util");
-const {ACCESS_ROLE, ACCESS_STATUS} = require("../../global");
-
 class CommentsService {
     constructor(commentRepository) {
         this.repo = commentRepository;

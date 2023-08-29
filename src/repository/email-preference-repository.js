@@ -1,5 +1,4 @@
 const fs = require("fs");
-const errorUtil = require("../util/error-util");
 const uuid = require("uuid");
 
 class EmailPreferenceRepository {

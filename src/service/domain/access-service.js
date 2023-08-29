@@ -1,6 +1,6 @@
 const global = require("../../global");
 const errorUtil = require("../../util/error-util");
-const {ACCESS_ROLE, ACCESS_STATUS} = require("../../global");
+const {ACCESS_ROLE} = require("../../global");
 
 class AccessService {
     constructor(accessRepository) {

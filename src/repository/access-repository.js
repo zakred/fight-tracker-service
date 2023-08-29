@@ -1,9 +1,7 @@
 const fs = require("fs");
 const errorUtil = require("../util/error-util");
-const global = require("../global");
 const uuid = require("uuid");
 const entityUtil = require("../util/entity-util");
-const {ACCESS_STATUS, ACCESS_TYPE} = require("../global");
 
 class AccessRepository {
     db = {access: []};

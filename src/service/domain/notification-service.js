@@ -1,4 +1,3 @@
-const errorUtil = require("../../util/error-util");
 const {textShortener} = require("../../global");
 const moment = require("moment");
 
