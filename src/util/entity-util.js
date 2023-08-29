@@ -20,6 +20,9 @@ const addCreateAudit = (authUser, req) => {
     req.createdBy = {
         id: authUser.id,
         email: authUser.email,
+        name: authUser.name,
+        nickname: authUser.nickname,
+        picture: authUser.picture,
     };
 };
 const addCreateAuditWithOwner = (authUser, req) => {

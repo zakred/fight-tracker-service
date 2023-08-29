@@ -4,6 +4,7 @@ const cors = require("cors");
 const {auth, requiredScopes} = require("express-oauth2-jwt-bearer");
 const envConfig = require("./env-config");
 const errorUtil = require("./util/error-util");
+const {SCOPES} = require("./global");
 const timeService = new (require("./service/infrastructure/time-service"))();
 const HMACService = new (require("./service/infrastructure/hmac-service"))(
     envConfig.SERVER_SIGNING_SECRET_KEY,
@@ -12,29 +13,47 @@ const AccessRepository = require("./repository/access-repository");
 const accessService = new (require("./service/domain/access-service"))(
     new AccessRepository(envConfig.ACCESS_DB_FILENAME),
 );
+const commentRepository = new (require("./repository/comment-repository"))(
+    envConfig.COMMENTS_DB_FILENAME,
+);
+const commentsService = new (require("./service/domain/comments-service"))(
+    commentRepository,
+);
 const FightRepository = require("./repository/fight-repository");
 const FightService = require("./service/domain/fight-service");
-const {SCOPES} = require("./global");
 const fightService = new FightService(
     new FightRepository(envConfig.DB_FILENAME),
     accessService,
+    commentsService,
 );
+const manageCommentsService =
+    new (require("./service/application/manage-comments-service"))(
+        fightService,
+        accessService,
+        commentRepository,
+    );
 const validatorSchema =
     new (require("./service/domain/schema-validator-service"))();
+const templateService = new (require("./service/domain/template-service"))(
+    envConfig.email,
+);
 const emailPreferenceRepository =
     new (require("./repository/email-preference-repository"))(
         envConfig.EMAIL_PREFERENCES_DB_FILENAME,
+    );
+const azureEmailService =
+    new (require("./service/infrastructure/azure-email-service"))(
+        envConfig.email,
+        envConfig.AZURE_COMMUNICATION_CONNECTION_STRING,
     );
 const emailService = new (require("./service/infrastructure/email-service"))(
     HMACService,
     emailPreferenceRepository,
     timeService,
+    templateService,
+    azureEmailService,
+    envConfig.email,
 );
-const awsEmailService =
-    new (require("./service/infrastructure/aws-email-service"))(
-        envConfig.AWS_REGION,
-        envConfig.email,
-    );
 const notificationRepository =
     new (require("./repository/notification-repository"))(
         envConfig.NOTIFICATIONS_DB_FILENAME,
@@ -46,10 +65,8 @@ const notificationService =
 const shareService = new (require("./service/application/share-service"))(
     fightService,
     accessService,
-    awsEmailService,
     notificationService,
     emailService,
-    envConfig.email.FIGHT_OVERVIEW_PATH,
 );
 
 const checkJwt = auth({
@@ -62,6 +79,8 @@ const getAuthUser = (auth) => {
         id: auth.payload.user_id,
         email: auth.payload.email,
         name: auth.payload.name,
+        nickname: auth.payload.nickname,
+        picture: auth.payload.picture,
     };
 };
 
@@ -128,6 +147,33 @@ router.post(
             authUser,
             req.body.fightId,
         );
+        res.status(204).end();
+    }),
+);
+
+router.post(
+    "/fight/comment/create",
+    checkJwt,
+    requiredScopes(SCOPES.COMMENTS_CREATE),
+    validatorSchema.mwCreateCommentRequest,
+    asyncHandler(async (req, res) => {
+        const authUser = getAuthUser(req.auth);
+        const result = await manageCommentsService.createComment(
+            authUser,
+            req.validatedBody,
+        );
+        res.status(201).json(result ?? {message: "success"});
+    }),
+);
+
+router.post(
+    "/fight/comment/delete",
+    checkJwt,
+    requiredScopes(SCOPES.COMMENTS_DELETE),
+    validatorSchema.mwDeleteCommentRequest,
+    asyncHandler(async (req, res) => {
+        const authUser = getAuthUser(req.auth);
+        await manageCommentsService.deleteComment(authUser, req.validatedBody);
         res.status(204).end();
     }),
 );

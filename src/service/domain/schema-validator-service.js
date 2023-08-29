@@ -5,10 +5,30 @@ const updateFightRequestSchema = require("../../schemas/update-fight-request-sch
 const deleteShareRequestSchema = require("../../schemas/delete-share-request-schema");
 const deleteNotificationsRequestSchema = require("../../schemas/delete-notifications-request-schema");
 const updateEmailSubscriptionSchema = require("../../schemas/update-email-subscription-schema");
+const createCommentSchema = require("../../schemas/create-comment-schema");
+const deleteCommentSchema = require("../../schemas/delete-comment-schema");
 
 class SchemaValidatorService {
     constructor() {}
 
+    mwCreateCommentRequest = (req, res, next) => {
+        return this.#createSchemaValidator(
+            createCommentSchema.schema,
+            req.body,
+            req,
+            res,
+            next,
+        );
+    };
+    mwDeleteCommentRequest = (req, res, next) => {
+        return this.#createSchemaValidator(
+            deleteCommentSchema.schema,
+            req.body,
+            req,
+            res,
+            next,
+        );
+    };
     mwDeleteShareRequest = (req, res, next) => {
         return this.#createSchemaValidator(
             deleteShareRequestSchema.schema,

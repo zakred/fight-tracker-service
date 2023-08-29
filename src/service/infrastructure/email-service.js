@@ -1,11 +1,21 @@
-const {EMAIL_SUBSCRIPTION_DECISION} = require("../../global");
+const {EMAIL_SUBSCRIPTION_DECISION, EMAIL_CATEGORY} = require("../../global");
 const errorUtil = require("../../util/error-util");
 
 class EmailService {
-    constructor(HMACService, emailPreferenceRepository, timeService) {
+    constructor(
+        HMACService,
+        emailPreferenceRepository,
+        timeService,
+        templateService,
+        azureEmailService,
+        emailConfig,
+    ) {
         this.HMACService = HMACService;
         this.emailPreferenceRepository = emailPreferenceRepository;
         this.timeService = timeService;
+        this.templateService = templateService;
+        this.azureEmailService = azureEmailService;
+        this.emailConfig = emailConfig;
     }
 
     createUnsubscribeData(email, category) {
@@ -61,6 +71,43 @@ class EmailService {
             return false;
         }
         return preference.decision === EMAIL_SUBSCRIPTION_DECISION.UNSUBSCRIBED;
+    };
+
+    sendShareInvitationEmailBulk = async (emailsToNotify, issuer) => {
+        if (!emailsToNotify || emailsToNotify.length < 1) {
+            console.log("No emails to send");
+            return;
+        }
+
+        for (const email of emailsToNotify) {
+            const isUnsubscribed = await this.isEmailUnsubscribedFromCategory(
+                email,
+                EMAIL_CATEGORY.SHARED_RESOURCES,
+            );
+            if (isUnsubscribed) {
+                console.log(
+                    `Skipping notify email ${
+                        email.charAt(0) + email.charAt(1) + "****"
+                    } it's unsubscribed from this mailing`,
+                );
+                continue;
+            }
+            const unsubscribeData = this.createUnsubscribeData(
+                email,
+                EMAIL_CATEGORY.SHARED_RESOURCES,
+            );
+            const template = this.templateService.shareResourceTemplate(
+                issuer,
+                unsubscribeData,
+            );
+            this.azureEmailService
+                .sendEmail(
+                    this.emailConfig.EMAIL_SUBJECT_SHARE_RESOURCE,
+                    email,
+                    template,
+                )
+                .then();
+        }
     };
 }
 

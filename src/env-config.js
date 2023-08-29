@@ -13,16 +13,24 @@ const EMAIL_PREFERENCES_DB_FILENAME = getOrDefault(
     "EMAIL_PREFERENCES_DB_FILENAME",
     "email-preferences-db.json",
 );
+const COMMENTS_DB_FILENAME = getOrDefault(
+    "COMMENTS_DB_FILENAME",
+    "comments-db.json",
+);
 
 const SERVER_SIGNING_SECRET_KEY = getRequired("SERVER_SIGNING_SECRET_KEY");
-const AWS_ACCESS_KEY_ID = getRequired("AWS_ACCESS_KEY_ID");
-const AWS_SECRET_ACCESS_KEY = getRequired("AWS_SECRET_ACCESS_KEY");
-const AWS_REGION = getOrDefault("AWS_REGION", "us-east-1");
+const AZURE_COMMUNICATION_CONNECTION_STRING = getRequired(
+    "AZURE_COMMUNICATION_CONNECTION_STRING",
+);
 
 const FQDN_EMAIL_TPL = getRequired("FQDN_EMAIL_TPL");
 const email = {
     EMAIL_FROM: getRequired("EMAIL_FROM"),
-    SES_API_VERSION: getOrDefault("SES_API_VERSION", "2019-09-27"),
+    EMAIL_TO_DISPLAY_NAME: getOrDefault("EMAIL_TO_DISPLAY_NAME", "Fighter"),
+    EMAIL_SUBJECT_SHARE_RESOURCE: getOrDefault(
+        "EMAIL_SUBJECT",
+        "A fight has been shared!",
+    ),
     PRIVACY_POLICY_URL: getOrDefault(
         "PRIVACY_POLICY_URL",
         FQDN_EMAIL_TPL + "/privacy",
@@ -71,7 +79,8 @@ module.exports = {
     LIST_DB_FILENAME,
     EMAIL_PREFERENCES_DB_FILENAME,
     NOTIFICATIONS_DB_FILENAME,
-    AWS_REGION,
     email,
+    COMMENTS_DB_FILENAME,
     SERVER_SIGNING_SECRET_KEY,
+    AZURE_COMMUNICATION_CONNECTION_STRING,
 };

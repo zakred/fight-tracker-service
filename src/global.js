@@ -19,6 +19,8 @@ const SCOPES = {
     SHARE_RESOURCE_UPDATE_ROLE: "share_resource.update_role",
     NOTIFICATIONS_READ: "notifications.read",
     NOTIFICATIONS_DELETE: "notifications.delete",
+    COMMENTS_CREATE: "comments.create",
+    COMMENTS_DELETE: "comments.delete",
 };
 
 const EMAIL_CATEGORY = {
@@ -30,6 +32,11 @@ const EMAIL_SUBSCRIPTION_DECISION = {
     UNSUBSCRIBED: "UNSUBSCRIBED",
 };
 
+const COMMENT_STATUS = {
+    CREATED: "CREATED",
+    EDITED: "EDITED",
+    DELETED: "DELETED",
+};
 const textShortener = (txt, targetLength = 80) => {
     if (!txt) {
         return txt;
@@ -46,5 +53,6 @@ module.exports = {
     SCOPES,
     EMAIL_SUBSCRIPTION_DECISION,
     EMAIL_CATEGORY,
+    COMMENT_STATUS,
     textShortener,
 };

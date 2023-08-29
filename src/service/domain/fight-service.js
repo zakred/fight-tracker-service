@@ -1,9 +1,10 @@
 const errorUtil = require("../../util/error-util");
 
 class FightService {
-    constructor(fightRepository, accessService) {
+    constructor(fightRepository, accessService, commentsService) {
         this.repo = fightRepository;
         this.accessService = accessService;
+        this.commentsService = commentsService;
     }
 
     getFightById = async (fightId) => {
@@ -19,6 +20,9 @@ class FightService {
         );
         const fightsWithMetaData =
             await this.accessService.setFightsAccessMetaData(allFights);
+        for (const fight of fightsWithMetaData) {
+            await this.commentsService.setCommentsToFight(authUser, fight);
+        }
         return fightsWithMetaData;
     };
 

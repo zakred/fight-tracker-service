@@ -11,14 +11,18 @@ class AccessService {
         return this.repo.findAllAuthenticatedUser(authUser);
     }
 
-    isResourceAuthorized = async (authUser, resourceId, shareType) => {
+    isResourceAuthorized = async (authUser, resourceId, accessRoleType) => {
         const resources = await this.repo.findAllForResource(resourceId);
         let isRole = (x) => x.role === ACCESS_ROLE.EDIT_INVITE;
-        if (shareType === "EDIT") {
+        if (accessRoleType === ACCESS_ROLE.EDIT) {
             // Higher role has access too
             isRole = (x) =>
                 x.role === ACCESS_ROLE.EDIT ||
                 x.role === ACCESS_ROLE.EDIT_INVITE;
+        }
+        if (accessRoleType === ACCESS_ROLE.VIEW) {
+            // If we want to check if it has view access, then any existing role will have access
+            isRole = () => true;
         }
         if (!resources) {
             return false;
@@ -26,10 +30,26 @@ class AccessService {
         return resources.find((x) => x.email === authUser.email && isRole(x));
     };
     isResourceAuthorizedToShare = async (authUser, resourceId) => {
-        return await this.isResourceAuthorized(authUser, resourceId, "SHARE");
+        return await this.isResourceAuthorized(
+            authUser,
+            resourceId,
+            ACCESS_ROLE.EDIT_INVITE,
+        );
     };
     isResourceAuthorizedToEdit = async (authUser, resourceId) => {
-        return await this.isResourceAuthorized(authUser, resourceId, "EDIT");
+        return await this.isResourceAuthorized(
+            authUser,
+            resourceId,
+            ACCESS_ROLE.EDIT,
+        );
+    };
+
+    isResourceAuthorizedToView = async (authUser, resourceId) => {
+        return await this.isResourceAuthorized(
+            authUser,
+            resourceId,
+            ACCESS_ROLE.VIEW,
+        );
     };
     getFightIdsShared = (accessArray) => {
         if (!accessArray) {
@@ -52,7 +72,7 @@ class AccessService {
                 });
             }
             const meta = {
-                sharePermissions: {
+                accessControl: {
                     sharedWith: sharedWith,
                 },
             };

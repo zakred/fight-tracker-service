@@ -1,22 +1,18 @@
 const global = require("../../global");
 const errorUtil = require("../../util/error-util");
-const {EMAIL_CATEGORY, ACCESS_TYPE} = require("../../global");
+const {ACCESS_TYPE} = require("../../global");
 
 class ShareService {
     constructor(
         fightService,
         accessService,
-        awsEmailService,
         notificationService,
         emailService,
-        fightOverviewPath,
     ) {
         this.fightService = fightService;
         this.accessService = accessService;
-        this.awsEmailService = awsEmailService;
         this.notificationService = notificationService;
         this.emailService = emailService;
-        this.fightOverviewPath = fightOverviewPath;
     }
 
     create = async (authUser, req) => {
@@ -36,38 +32,8 @@ class ShareService {
                         email,
                     );
                 }
-                const emailsSubscribed = [];
-                for (const email of emailsToNotify) {
-                    const isUnsubscribed =
-                        await this.emailService.isEmailUnsubscribedFromCategory(
-                            email,
-                            EMAIL_CATEGORY.SHARED_RESOURCES,
-                        );
-                    if (isUnsubscribed) {
-                        console.log(
-                            `Skipping notify email ${
-                                email.charAt(0) + email.charAt(1) + "****"
-                            } it's unsubscribed from this mailing`,
-                        );
-                    } else {
-                        emailsSubscribed.push(email);
-                    }
-                }
-                const emailsData = emailsSubscribed.map((email) => {
-                    const unsubscribeData =
-                        this.emailService.createUnsubscribeData(
-                            email,
-                            EMAIL_CATEGORY.SHARED_RESOURCES,
-                        );
-                    return {
-                        email,
-                        unsubscribeData,
-                        acceptLink:
-                            this.fightOverviewPath + "/" + req.resourceId,
-                    };
-                });
-                this.awsEmailService.sendShareInvitationEmailBulk(
-                    emailsData,
+                this.emailService.sendShareInvitationEmailBulk(
+                    emailsToNotify,
                     authUser.name,
                 );
                 break;
@@ -96,12 +62,6 @@ class ShareService {
             case global.ACCESS_TYPE.FIGHT:
                 await this.#ensureAuthUserIsAuthorized(req, authUser);
                 await this.accessService.deleteAccess(req);
-                const emailsToNotify = req.persons.map((x) => x.email);
-                //TODO template for deletion
-                // this.emailService.sendShareInvitationEmailBulk(
-                //     emailsToNotify,
-                //     authUser.name,
-                // );
                 break;
             case global.ACCESS_TYPE.LIST:
                 break;

@@ -11,6 +11,10 @@ class TimeService {
         const target = new Date(timestamp);
         return target < new Date();
     }
+
+    unixTimestampNow() {
+        return Math.floor(new Date().getTime() / 1000);
+    }
 }
 
 module.exports = TimeService;
