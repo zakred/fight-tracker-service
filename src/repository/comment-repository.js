@@ -24,7 +24,7 @@ class CommentRepository {
     }
 
     findByCommentId = async (commentId) => {
-        return this.db.comments.find((x) => (x.commentId = commentId));
+        return this.db.comments.find((x) => x.commentId === commentId);
     };
 
     findAllByFightId = async (fightId) => {
@@ -50,6 +50,7 @@ class CommentRepository {
         if (!entity) {
             errorUtil.throwNotFound(commentId);
         }
+        this.db.comments.filter((x) => x.commentId !== commentId);
         entity.status = COMMENT_STATUS.DELETED;
         entity.message = "<message deleted>";
         entityUtil.addUpdateAudit(authUser, entity);

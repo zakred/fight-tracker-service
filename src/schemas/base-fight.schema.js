@@ -32,16 +32,6 @@ const schema = Joi.object({
             type: Joi.string().pattern(new RegExp("^IMAGE$|^FILE$")).required(),
             size: Joi.string().allow("").max(20).optional(),
         }),
-    comments: Joi.array()
-        .optional()
-        .items({
-            name: Joi.string().max(30).required(),
-            avatarUrl: Joi.string().uri().allow("").max(2000).optional(),
-            message: Joi.string().max(150).required(),
-            createdAt: Joi.string()
-                .required()
-                .pattern(new RegExp("^(0|[1-9][0-9]*)$")),
-        }),
     listId: Joi.string()
         .allow("")
         .optional()
