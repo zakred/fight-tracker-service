@@ -60,22 +60,41 @@ class AccessService {
             .map((a) => a.resourceId);
     };
 
-    setFightsAccessMetaData = async (fights) => {
+    setFightsAccessMetaData = async (authUser, fights) => {
         const result = [];
         for (const f of fights) {
             const auths = await this.repo.findAllForResource(f.fightId);
             const sharedWith = [];
+            let currentAccess = {};
             for (const auth of auths) {
+                if (auth.email === authUser.email) {
+                    currentAccess = auth;
+                }
                 sharedWith.push({
                     email: auth.email,
                     role: auth.role,
                 });
             }
             const meta = {
+                // If currentAccess is not set then it means the user is the owner so the other conditions won't be evaluated
+                attributes: {
+                    isShared: f.owner.id !== authUser.id,
+                    canEdit:
+                        f.owner.id === authUser.id ||
+                        currentAccess.role === ACCESS_ROLE.EDIT ||
+                        currentAccess.role === ACCESS_ROLE.EDIT_INVITE,
+                    canShare:
+                        f.owner.id === authUser.id ||
+                        currentAccess.role === ACCESS_ROLE.EDIT_INVITE,
+                    canDelete: f.owner.id === authUser.id,
+                },
                 accessControl: {
                     sharedWith: sharedWith,
                 },
             };
+            if (!meta.attributes.canShare) {
+                delete meta.accessControl;
+            }
             result.push({...f, ...meta});
         }
         return result;

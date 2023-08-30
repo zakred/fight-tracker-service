@@ -19,11 +19,24 @@ class FightService {
             fightIdsShared,
         );
         const fightsWithMetaData =
-            await this.accessService.setFightsAccessMetaData(allFights);
+            await this.accessService.setFightsAccessMetaData(
+                authUser,
+                allFights,
+            );
         for (const fight of fightsWithMetaData) {
             await this.commentsService.setCommentsToFight(authUser, fight);
         }
+        fightsWithMetaData.map(this.#deleteInternalFightProperties);
+
         return fightsWithMetaData;
+    };
+
+    #deleteInternalFightProperties = (fight) => {
+        delete fight.owner;
+        delete fight.createdBy;
+        delete fight.updatedBy;
+        delete fight.createdAt;
+        delete fight.updatedAt;
     };
 
     createFight = async (authUser, req) => {
